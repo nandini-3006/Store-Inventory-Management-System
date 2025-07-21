@@ -1,5 +1,7 @@
 package com.nandini.management.products;
 
+import com.nandini.management.loss.LossEntity;
+import com.nandini.management.loss.LossRepository;
 import com.nandini.management.profit.DailyProfit;
 import com.nandini.management.profit.DailyProfitRepository;
 import com.nandini.management.profit.MonthlyProfit;
@@ -20,11 +22,13 @@ public class ProductService {
     private final SalesRepository salesRepository;
     private final DailyProfitRepository dailyProfitRepository;
     private final MonthlyProfitRepository monthlyProfitRepository;
-    public ProductService(ProductRepository productRepository,SalesRepository salesRepository,DailyProfitRepository dailyProfitRepository,MonthlyProfitRepository monthlyProfitRepository) {
+    private final LossRepository lossRepository;
+    public ProductService(ProductRepository productRepository,SalesRepository salesRepository,DailyProfitRepository dailyProfitRepository,MonthlyProfitRepository monthlyProfitRepository,LossRepository lossRepository) {
         this.productRepository = productRepository;
         this.salesRepository=salesRepository;
         this.dailyProfitRepository=dailyProfitRepository;
         this.monthlyProfitRepository=monthlyProfitRepository;
+        this.lossRepository=lossRepository;
     }
     public ProductEntity addProduct(Double price,Long quantity,String brand,String name,LocalDate expiry,Double profit){
         ProductEntity product = new ProductEntity();
@@ -101,6 +105,14 @@ public class ProductService {
         int s=product.size();
         for(int i=0;i<s;i++) {
             if (today.isAfter(product.get(i).getExpiry())) {
+                LossEntity loss_items=new LossEntity();
+                loss_items.setQuantity(product.get(i).getQuantity());
+                loss_items.setStatus("Expired");
+                loss_items.setBrand(product.get(i).getBrand());
+                loss_items.setName(product.get(i).getName());
+                loss_items.setDate(LocalDate.now());
+                loss_items.setLoss(product.get(i).getPrice()*product.get(i).getQuantity());
+                lossRepository.save(loss_items);
                 productRepository.delete(product.get(i));
             }
         }
@@ -111,6 +123,14 @@ public class ProductService {
             ProductEntity set = productRepository.findByNameAndBrandAndExpiry(list.get(i).getName(),list.get(i).getBrand(),list.get(i).getExpiry()).orElseThrow(() -> new RuntimeException("Product not found"));
             set.setQuantity(set.getQuantity() - list.get(i).getQuantity());
             if(set.getQuantity()<=0){
+                LossEntity loss_items=new LossEntity();
+                loss_items.setQuantity(set.getQuantity());
+                loss_items.setStatus("Damaged");
+                loss_items.setBrand(set.getBrand());
+                loss_items.setName(set.getName());
+                loss_items.setDate(LocalDate.now());
+                loss_items.setLoss(set.getPrice()*set.getQuantity());
+                lossRepository.save(loss_items);
                 productRepository.delete(set);
             }
             else {

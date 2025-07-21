@@ -1,4 +1,4 @@
-package com.nandini.management.products;
+package com.nandini.management.loss;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -12,15 +12,12 @@ import java.time.LocalDate;
 @Setter
 @ToString
 @Entity
-@Table(name = "products")
-public class ProductEntity {
+@Table(name = "loss")
+public class LossEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
     private Long id;
-    //different class for suppliers,we will manage it
-    @Column(nullable = false)
-    private Double price;
 
     @Column(nullable = false)
     private Long quantity;
@@ -31,10 +28,15 @@ public class ProductEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = true)
-    private LocalDate expiry;
+    @Column(nullable = false)
+    private Double loss;
 
     @Column(nullable = false)
-    private Double profit;
+    private LocalDate date;
+
+    @Column(nullable = false)
+    private String status;
+
+
 
 }

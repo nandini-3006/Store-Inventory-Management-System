@@ -44,12 +44,4 @@ public class ProductController {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
- /*   @GetMapping("/topbrands")
-    public ResponseEntity<List<String>>topbrands(@RequestParam String name){
-        try {
-            return ResponseEntity.ok(productService.top_selling_by_brand(name));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    } */
 }
