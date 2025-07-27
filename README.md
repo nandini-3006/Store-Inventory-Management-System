@@ -1,6 +1,6 @@
-# 🛒 Supermarket Inventory Management System
+# 🛒 Store Inventory Management System
 
-A full-stack **Spring Boot backend** project designed to manage inventory, billing, stock-in, and reporting in a supermarket. This system supports **role-based access**, **secure authentication**, and is ready for deployment with a MySQL database.
+A Backend System project designed to manage inventory, billing, stock-in, and reporting in a supermarket. This system supports **role-based access**, **secure authentication**, and is ready for deployment with a MySQL database.
 
 ---
 
