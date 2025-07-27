@@ -37,4 +37,15 @@ public class ProductEntity {
     @Column(nullable = false)
     private Double profit;
 
+    @Column(nullable = true)
+    private Double discount;
+
+    @Column(nullable = true)
+    private String discount_status;
+
+    @Column(nullable = true)
+    private Boolean discount_bool;
+
+    @Column(nullable = false)
+    private Long threshold;
 }

@@ -16,4 +16,8 @@ public class ProductRequestDTO {
     private String name;
     private LocalDate expiry;
     private Double profit;
+    private Double discount;
+    private String discount_status;
+    private Boolean discount_bool;
+    private Long threshold;
 }

@@ -1,10 +1,7 @@
-package com.nandini.management.profit;
+package com.nandini.management.users;
 
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.time.LocalDate;
-import java.time.Month;
 
 @Builder
 @AllArgsConstructor
@@ -13,16 +10,19 @@ import java.time.Month;
 @Setter
 @ToString
 @Entity
-@Table(name = "monthlyprofit")
-public class MonthlyProfit {
+public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
     private Long id;
+
+    @Column(nullable = false,unique=true)
+    private String username;
+
     @Column(nullable = false)
-    private Double profit;
+    private String password;
+
     @Column(nullable = false)
-    private Integer mon;
-    @Column(nullable = false)
-    private Long year;
+    @Enumerated(EnumType.STRING)
+    private Role name;
 }

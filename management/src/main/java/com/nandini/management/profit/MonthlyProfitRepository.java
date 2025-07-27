@@ -7,5 +7,5 @@ import java.time.Month;
 import java.util.Optional;
 
 public interface MonthlyProfitRepository  extends JpaRepository<MonthlyProfit,Long> {
-    Optional<MonthlyProfit> findByMonthAndYear(Integer month,Long year);
+    Optional<MonthlyProfit> findByMonAndYear(Integer mon,Long year);
 }

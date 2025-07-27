@@ -40,4 +40,10 @@ public class SalesEntity {
 
     @Column(nullable = false)
     private Long year;
+
+    @Column(nullable = true)
+    private Double discount;
+
+    @Column(nullable = true)
+    private Boolean discount_bool;
 }

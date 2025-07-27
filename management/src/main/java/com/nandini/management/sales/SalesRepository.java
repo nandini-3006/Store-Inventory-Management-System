@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @Repository
 public interface SalesRepository  extends JpaRepository<SalesEntity,Long> {
-    Optional<SalesEntity> findByNameAndBrandAndMonthAndYear(String name, String brand, Integer month,Long year);
+    Optional<SalesEntity> findByNameAndBrandAndMonthAndYearAndDiscount_bool(String name, String brand, Integer month,Long year,Double discount,Boolean discount_bool);
     Optional<SalesEntity> findByMonthAndYear(Integer month,Long year);
     Optional<SalesEntity> findByName(String name);
     Optional<SalesEntity> findByBrand(String brand);

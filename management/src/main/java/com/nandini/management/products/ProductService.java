@@ -12,6 +12,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,7 +31,7 @@ public class ProductService {
         this.monthlyProfitRepository=monthlyProfitRepository;
         this.lossRepository=lossRepository;
     }
-    public ProductEntity addProduct(Double price,Long quantity,String brand,String name,LocalDate expiry,Double profit){
+    public ProductEntity addProduct(Double price,Long quantity,String brand,String name,LocalDate expiry,Double profit,Double discount){
         ProductEntity product = new ProductEntity();
         product.setPrice(price);
         product.setQuantity(quantity);
@@ -38,6 +39,9 @@ public class ProductService {
         product.setName(name);
         product.setExpiry(expiry);
         product.setProfit(profit);
+        product.setDiscount(discount);
+        product.setDiscount_status("at the regular price");
+        product.setDiscount_bool(false);
         return productRepository.save(product);
     }
 
@@ -59,7 +63,7 @@ public class ProductService {
                 profitEntry.setDate(LocalDate.now());
                 dailyProfitRepository.save(profitEntry);
             }
-            Optional<MonthlyProfit> set4 = monthlyProfitRepository.findByMonthAndYear(LocalDate.now().getMonthValue(),(long)LocalDate.now().getYear());
+            Optional<MonthlyProfit> set4 = monthlyProfitRepository.findByMonAndYear(LocalDate.now().getMonthValue(),(long)LocalDate.now().getYear());
             if(set4.isPresent()){
                 MonthlyProfit  MonthlyprofitEntry = set4.get();
                 MonthlyprofitEntry.setProfit(MonthlyprofitEntry.getProfit()+(product.getQuantity()*set.getProfit()));
@@ -68,7 +72,7 @@ public class ProductService {
             else{
                 MonthlyProfit  MonthlyprofitEntry = new MonthlyProfit();
                 MonthlyprofitEntry.setProfit(product.getQuantity()*set.getProfit());
-                MonthlyprofitEntry.setMonth(LocalDate.now().getMonthValue());
+                MonthlyprofitEntry.setMon(LocalDate.now().getMonthValue());
                 MonthlyprofitEntry.setYear((long)LocalDate.now().getYear());
                 monthlyProfitRepository.save(MonthlyprofitEntry);
             }
@@ -78,7 +82,7 @@ public class ProductService {
             else {
                 productRepository.save(set);
             }
-            Optional<SalesEntity> set2 = salesRepository.findByNameAndBrandAndMonthAndYear(set.getName(),set.getBrand(),LocalDate.now().getMonthValue(),(long)LocalDate.now().getYear());
+            Optional<SalesEntity> set2 = salesRepository.findByNameAndBrandAndMonthAndYearAndDiscount_bool(set.getName(),set.getBrand(),LocalDate.now().getMonthValue(),(long)LocalDate.now().getYear(),set.getDiscount_bool());
             if(set2.isPresent()){
                 SalesEntity sale = set2.get();
                 sale.setQuantity(sale.getQuantity()+product.getQuantity());
@@ -94,6 +98,8 @@ public class ProductService {
                 sale.setMonth(LocalDate.now().getMonthValue());
                 sale.setYear((long)LocalDate.now().getYear());
                 sale.setTotal(product.getQuantity()*set.getPrice());
+                sale.setDiscount(set.getDiscount());
+                sale.setDiscount_bool(set.getDiscount_bool());
                 salesRepository.save(sale);
             }
         }
@@ -111,10 +117,23 @@ public class ProductService {
                 loss_items.setBrand(product.get(i).getBrand());
                 loss_items.setName(product.get(i).getName());
                 loss_items.setDate(LocalDate.now());
-                loss_items.setLoss(product.get(i).getPrice()*product.get(i).getQuantity());
+                if(product.get(i).getDiscount_bool()){
+                    loss_items.setLoss(product.get(i).getPrice() * 100.0 / (100.0 - product.get(i).getDiscount()) * product.get(i).getQuantity());
+                }
+                else {
+                    loss_items.setLoss(product.get(i).getPrice() * product.get(i).getQuantity());
+                }
                 lossRepository.save(loss_items);
                 productRepository.delete(product.get(i));
             }
+            if (ChronoUnit.DAYS.between(LocalDate.now(), product.get(i).getExpiry()) == 15&&product.get(i).getDiscount_bool()==false) {
+               product.get(i).setPrice(product.get(i).getPrice()-((product.get(i).getDiscount()/100)*product.get(i).getPrice()));
+               product.get(i).setDiscount_status(product.get(i).getDiscount()+"%off");
+                product.get(i).setProfit(product.get(i).getProfit()-(product.get(i).getDiscount()/100)*product.get(i).getPrice());
+                product.get(i).setDiscount_bool(true);
+                productRepository.save(product.get(i));
+            }
+
         }
     }
     public void damaged(List<DamagedDTO> list){
@@ -138,6 +157,8 @@ public class ProductService {
             }
         }
     }
-
+    public List<LowStockDTO> low_stock(){
+        return productRepository.findLowStock();
+    }
 
 }

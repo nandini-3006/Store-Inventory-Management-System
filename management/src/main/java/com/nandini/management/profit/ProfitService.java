@@ -18,7 +18,7 @@ public class ProfitService {
     public Optional<DailyProfit> daily_profit(LocalDate date){
         return dailyProfitRepository.findByDate(date);
     }
-    public Optional<MonthlyProfit> monthly_profit(Integer month,Long year){
-        return monthlyProfitRepository.findByMonthAndYear(month,year);
+    public Optional<MonthlyProfit> monthly_profit(Integer mon,Long year){
+        return monthlyProfitRepository.findByMonAndYear(mon,year);
     }
 }

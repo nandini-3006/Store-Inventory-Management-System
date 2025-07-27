@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class BillingDTO {
-    private String Name;
+    private String name;
     private String brand;
     private Long quantity;
 }
